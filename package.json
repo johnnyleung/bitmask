@@ -1,0 +1,13 @@
+{
+  "name": "bitmask",
+  "version": "0.1.0",
+  "description": "bitmask utility",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/johnnyleung/bitmask.git"
+  },
+  "author": "Johnny Leung",
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}
