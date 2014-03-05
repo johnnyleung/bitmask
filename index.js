@@ -29,6 +29,16 @@ function Bitmask (flags) {
         });
     };
 
+    Mask.validate = function (flags) {
+        var valid = [];
+        forEach(flags, function (flag) {
+            if (Mask.mask[flag]) {
+                valid.push(flag);
+            }
+        });
+        return valid;
+    };
+
     Mask.set(flags);
 
     function constructMask (data) {
