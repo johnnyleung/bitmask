@@ -30,13 +30,23 @@ function Bitmask (flags) {
     };
 
     Mask.validate = function (flags) {
-        var valid = [];
+        var valid = true;
         forEach(flags, function (flag) {
-            if (Mask.mask[flag]) {
-                valid.push(flag);
+            if (!Mask.mask[flag]) {
+                valid = false;
             }
         });
         return valid;
+    };
+
+    Mask.filter = function (flags) {
+        var filtered = [];
+        forEach(flags, function (flag) {
+            if (Mask.mask[flag]) {
+                filtered.push(flag);
+            }
+        });
+        return filtered;
     };
 
     Mask.set(flags);
