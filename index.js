@@ -40,6 +40,9 @@ function Bitmask (flags) {
 
     Mask.validate = function (flags) {
         var valid = true;
+        if (typeof flags === 'string') {
+            flags = Array.prototype.slice.call(arguments);
+        }
         forEach(flags, function (flag) {
             if (!Mask.mask[flag]) {
                 valid = false;
