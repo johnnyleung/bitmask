@@ -1,4 +1,5 @@
 function forEach (collection, callback) {
+    if (!collection.length) { return; }
     var index = -1,
         length = collection.length;
     while (++index < length) {
