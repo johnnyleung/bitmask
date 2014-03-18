@@ -30,6 +30,14 @@ function Bitmask (flags) {
         });
     };
 
+    Mask.get = function () {
+        return this.mask;
+    };
+
+    Mask.all = function () {
+        return Object.keys(this.mask);
+    };
+
     Mask.validate = function (flags) {
         var valid = true;
         forEach(flags, function (flag) {
