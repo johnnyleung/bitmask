@@ -1,5 +1,5 @@
 function forEach (collection, callback) {
-    if (!collection.length) { return; }
+    if (!collection || !collection.length) { return; }
     var index = -1,
         length = collection.length;
     while (++index < length) {
@@ -19,11 +19,15 @@ function Bitmask (flags) {
         if (typeof flags === 'number') {
             this.value = flags;
         } else {
-            this.add(flags);
+            this.value = 0;
+            this.add.apply(this, arguments);
         }
     }
 
     Mask.set = function (flags) {
+        if (Object.prototype.toString.call(flags) !== '[object Array]') {
+            flags = Array.prototype.slice.call(arguments);
+        }
         Mask.mask = {};
         forEach(flags, function (flag, index) {
             Mask.mask[flag] = 1 << index;
@@ -61,7 +65,7 @@ function Bitmask (flags) {
         return filtered;
     };
 
-    Mask.set(flags);
+    Mask.set.apply(Mask, arguments);
 
     function constructMask (data) {
         if (typeof data === 'number' ||
@@ -96,7 +100,11 @@ function Bitmask (flags) {
         }
         var thisValue = this.value;
         forEach(flags, function (flag) {
-            thisValue |= Mask.mask[flag];
+            if (Mask.mask[flag]) {
+                thisValue |= Mask.mask[flag];
+            } else {
+                thisValue = -1;
+            }
         });
         this.value = thisValue;
         return this;
