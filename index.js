@@ -7,6 +7,10 @@ function forEach (collection, callback) {
     }
 }
 
+function isArray (data) {
+    return Object.prototype.toString.call(data) === '[object Array]';
+}
+
 function Bitmask (flags) {
 
     var TOO_MANY_FLAGS = 'Too many flags';
@@ -25,7 +29,7 @@ function Bitmask (flags) {
     }
 
     Mask.set = function (flags) {
-        if (Object.prototype.toString.call(flags) !== '[object Array]') {
+        if (!isArray(flags)) {
             flags = Array.prototype.slice.call(arguments);
         }
         Mask.mask = {};
@@ -57,6 +61,9 @@ function Bitmask (flags) {
 
     Mask.filter = function (flags) {
         var filtered = [];
+        if (typeof flags === 'string') {
+            flags = Array.prototype.slice.call(arguments);
+        }
         forEach(flags, function (flag) {
             if (Mask.mask[flag]) {
                 filtered.push(flag);
@@ -68,13 +75,11 @@ function Bitmask (flags) {
     Mask.set.apply(Mask, arguments);
 
     function constructMask (data) {
-        if (typeof data === 'number' ||
-            typeof data === 'string' ||
-            Object.prototype.toString.call(data) === '[object Array]'
-        ) {
-            return new Mask(data);
-        } else {
+        if (data instanceof Mask) {
             return data;
+        } else {
+            data = Array.prototype.slice.call(arguments);
+            return new Mask(data);
         }
     }
 
@@ -95,7 +100,7 @@ function Bitmask (flags) {
             this.value |= flags.value;
             return this;
         }
-        if (typeof flags === 'string') {
+        if (!isArray(flags)) {
             flags = Array.prototype.slice.call(arguments);
         }
         var thisValue = this.value;
@@ -111,34 +116,14 @@ function Bitmask (flags) {
     };
 
     Mask.prototype.remove = function (flags) {
-        if (flags instanceof Mask) {
-            this.value &= ~flags.value;
-            return this;
-        }
-        if (typeof flags === 'string') {
-            flags = Array.prototype.slice.call(arguments);
-        }
-        var thisValue = this.value;
-        forEach(flags, function (flag) {
-            thisValue &= ~Mask.mask[flag];
-        });
-        this.value = thisValue;
+        var mask = constructMask.apply(this, arguments);
+        this.value &= ~mask.value;
         return this;
     };
 
     Mask.prototype.toggle = function (flags) {
-        if (flags instanceof Mask) {
-            this.value ^= flags.value;
-            return this;
-        }
-        if (typeof flags === 'string') {
-            flags = Array.prototype.slice.call(arguments);
-        }
-        var thisValue = this.value;
-        forEach(flags, function (flag) {
-            thisValue ^= Mask.mask[flag];
-        });
-        this.value = thisValue;
+        var mask = constructMask.apply(this, arguments);
+        this.value ^= mask.value;
         return this;
     };
 
@@ -153,23 +138,27 @@ function Bitmask (flags) {
         return flags;
     };
 
-    Mask.prototype.includes = function (mask) {
-        mask = constructMask(mask);
+    Mask.prototype.includes = function () {
+        var mask = constructMask.apply(this, arguments);
         return ((this.value & mask.value) === mask.value);
     };
 
-    Mask.prototype.equals = function (mask) {
-        mask = constructMask(mask);
+    Mask.prototype.excludes = function () {
+        return !this.includes.apply(this, arguments);
+    };
+
+    Mask.prototype.equals = function () {
+        var mask = constructMask.apply(this, arguments);
         return (this.value === mask.value);
     };
 
-    Mask.prototype.and = function (mask) {
-        mask = constructMask(mask);
+    Mask.prototype.and = function () {
+        var mask = constructMask.apply(this, arguments);
         return new Mask(this.value | mask.value);
     };
 
-    Mask.prototype.intersect = function (mask) {
-        mask = constructMask(mask);
+    Mask.prototype.intersect = function () {
+        var mask = constructMask.apply(this, arguments);
         return new Mask(this.value & mask.value);
     };
 
