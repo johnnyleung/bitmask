@@ -109,8 +109,6 @@
             forEach(flags, function (flag) {
                 if (Mask.mask[flag]) {
                     thisValue |= Mask.mask[flag];
-                } else {
-                    thisValue = -1;
                 }
             });
             this.value = thisValue;
